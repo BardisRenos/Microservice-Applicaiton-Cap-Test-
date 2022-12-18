@@ -1,11 +1,11 @@
 package com.example.entity;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The entity class of the user database table
@@ -14,10 +14,9 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "customer")
-public class Customer implements Serializable {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +29,9 @@ public class Customer implements Serializable {
     @Column(name = "balance")
     private Integer balance;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "customer_fk")
-    private List<Account> account = new ArrayList<>();
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+//    @JoinColumn(name = "customer_fk")
+//    private List<Account> account = new ArrayList<>();
 
     /**
      * The constructor of the Customer

@@ -1,17 +1,16 @@
 package com.example.entity;
 
-import com.example.response.Transaction;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The entity class of the Account database table
@@ -19,15 +18,14 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "account")
-public class Account implements Serializable {
+public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "account_id", unique = true, nullable = false, updatable = false)
+    @GeneratedValue
+//    @Column(name = "account_id", unique = true, nullable = false, updatable = false)
     private Integer accountID;
     @Column(name = "initial_credit")
     private Integer initialCredit;
@@ -36,21 +34,18 @@ public class Account implements Serializable {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateCreation;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_fk")
-    private Customer customer;
+    @Column(name = "customer_id")
+    private Integer customerID;
 
-    private List<Transaction> transactions = new ArrayList<>();
+//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JoinColumn(name = "customer_fk")
+//    private Customer customer;
 
-    /**
-     * The constructor of the Account
-     * @param accountID The account id
-     * @param initialCredit The initial credit of the account
-     * @param dateCreation The date of creation of the account
-     */
-    public Account(Integer accountID, Integer initialCredit, LocalDateTime dateCreation) {
+
+    public Account(Integer accountID, Integer initialCredit, LocalDateTime dateCreation, Integer customerID) {
         this.accountID = accountID;
         this.initialCredit = initialCredit;
         this.dateCreation = dateCreation;
+        this.customerID = customerID;
     }
 }

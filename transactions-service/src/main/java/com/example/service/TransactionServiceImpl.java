@@ -4,22 +4,27 @@ import com.example.dao.TransactionRepository;
 import com.example.dto.TransactionDTO;
 import com.example.mapper.TransactionMapper;
 import com.example.service.Interfaces.TransactionServiceInterface;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ResponseStatus
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionServiceInterface {
 
     private final TransactionRepository transactionRepository;
 
+    public TransactionServiceImpl(TransactionRepository transactionRepository) {
+        this.transactionRepository = transactionRepository;
+    }
+
     @Override
     public List<TransactionDTO> getAllTransactions() {
         return transactionRepository.findAll().stream().map(TransactionMapper::toTransactionDTO).collect(Collectors.toList());
+    }
+
+    public TransactionDTO getTransaction(Integer id) {
+        return transactionRepository.findById(id).map(TransactionMapper::toTransactionDTO).get();
     }
 }

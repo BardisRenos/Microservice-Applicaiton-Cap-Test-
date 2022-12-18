@@ -1,8 +1,8 @@
 package com.example.controller;
 
 import com.example.dto.AccountDTO;
-import com.example.dto.CustomerDTO;
 import com.example.request.AccountRequest;
+import com.example.response.RestApiResponse;
 import com.example.service.AccountServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,22 +12,21 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/v1/")
+@RequestMapping(value = "/api/v1/account/")
 @RequiredArgsConstructor
 public class AccountController {
 
     private final AccountServiceImpl accountService;
 
-
-    @PostMapping("account")
+    @PostMapping("create")
     @ResponseStatus(HttpStatus.CREATED)
-    public AccountDTO createCurrentAccount(@Valid @RequestBody AccountRequest accountRequest) {
+    public RestApiResponse createCurrentAccount(@Valid @RequestBody AccountRequest accountRequest) {
         return accountService.createAccount(accountRequest);
     }
 
-    @GetMapping("customers")
+    @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public List<CustomerDTO> getAllCustomers() {
-        return accountService.getAllCustomers();
+    public List<AccountDTO> getAllAccount() {
+        return accountService.getAllAccount();
     }
 }

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class AccountDTO implements Serializable {
 
     private Integer accountID;

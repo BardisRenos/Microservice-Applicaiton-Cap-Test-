@@ -1,7 +1,6 @@
 package com.example.mapper;
 
 import com.example.dto.CustomerDTO;
-import com.example.dto.CustomerTransactionDTO;
 import com.example.entity.Customer;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -17,9 +16,9 @@ public class CustomerMapper {
      * @param customer customer class
      * @return CustomerTransactionDTO class
      */
-    public static CustomerTransactionDTO toCustomerTransactionDTO(Customer customer) {
-        return new ModelMapper().map(customer, CustomerTransactionDTO.class);
-    }
+//    public static CustomerTransactionDTO toCustomerTransactionDTO(Customer customer) {
+//        return new ModelMapper().map(customer, CustomerTransactionDTO.class);
+//    }
 
     /**
      * The conversion of the Customer object into CustomerDTO

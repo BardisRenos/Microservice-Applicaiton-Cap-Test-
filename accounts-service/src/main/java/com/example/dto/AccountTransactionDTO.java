@@ -3,7 +3,7 @@ package com.example.dto;
 import com.example.response.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -15,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class AccountTransactionDTO extends AccountDTO {
 
     private List<Transaction> transactions;

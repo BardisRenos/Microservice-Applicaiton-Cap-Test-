@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class TransactionDTO implements Serializable {
 
     private Integer transactionID;
-    private Integer customerID;
+//    private Integer customerID;
     private Integer amount;
     private LocalDateTime time;
 }
