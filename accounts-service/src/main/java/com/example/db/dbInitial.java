@@ -20,9 +20,9 @@ public class dbInitial {
         return args -> {
 
             List<Account> accounts = new ArrayList<>(Arrays.asList(
-                    new Account(1, 10, LocalDateTime.now(), 1),
-                    new Account(2, 20, LocalDateTime.now().plusDays(1), 2),
-                    new Account(3, 30, LocalDateTime.now().plusDays(2), 3)));
+                    new Account(1, 10, LocalDateTime.now(), 1, 1),
+                    new Account(2, 20, LocalDateTime.now().plusDays(1), 2, 2),
+                    new Account(3, 30, LocalDateTime.now().plusDays(2), 3, 3)));
 
             accountRepository.saveAll(accounts);
 

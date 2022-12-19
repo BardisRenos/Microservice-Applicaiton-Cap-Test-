@@ -1,13 +1,11 @@
 package com.example.dto;
 
-import com.example.response.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * The AccountTransactionDTO class
@@ -18,10 +16,12 @@ import java.util.List;
 @NoArgsConstructor
 public class AccountTransactionDTO extends AccountDTO {
 
-    private List<Transaction> transactions;
+    private Integer transactionId;
+    private Integer customerId;
 
-    public AccountTransactionDTO(Integer accountID, Integer initialCredit, LocalDateTime dateCreation, List<Transaction> transactions) {
+    public AccountTransactionDTO(Integer accountID, Integer initialCredit, LocalDateTime dateCreation, Integer transactionId, Integer customerId) {
         super(accountID, initialCredit, dateCreation);
-        this.transactions = transactions;
+        this.transactionId = transactionId;
+        this.customerId = customerId;
     }
 }
