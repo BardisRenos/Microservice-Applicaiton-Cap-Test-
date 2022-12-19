@@ -1,19 +1,22 @@
 package com.example.service;
 
+import com.example.RabbitExchangeConfig.MessageConfig;
 import com.example.dao.AccountRepository;
 import com.example.dto.AccountDTO;
+import com.example.dto.AccountTransactionDTO;
 import com.example.entity.Account;
+import com.example.event.AccountEvent;
 import com.example.mapper.AccountMapper;
 import com.example.request.AccountRequest;
 import com.example.response.Customer;
 import com.example.response.RestApiResponse;
 import com.example.response.Transaction;
 import com.example.service.Interfaces.AccountServiceInterface;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,12 +28,17 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountServiceInterface {
 
-    private final AccountRepository accountRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
-    private final WebClient.Builder webClient;
+    @Autowired
+    private WebClient.Builder webClient;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
     /**
      * This method creates a new account (First checks if the customer exists)
      * @param accountRequest The given object that contains the Customer ID and the initial value
@@ -40,42 +48,40 @@ public class AccountServiceImpl implements AccountServiceInterface {
     public RestApiResponse createAccount(AccountRequest accountRequest) {
 
         final String CUSTOMER_BASE_URL = "http://CUSTOMER-SERVICE/api/v1";
-        final String TRANSACTION_BASE_URL = "http://TRANSACTION-SERVICE/api/v1";
 
         RestApiResponse response = new RestApiResponse();
 
-        Customer customer = webClient.baseUrl(CUSTOMER_BASE_URL).build().get().uri("/customer/"+accountRequest.getCustomerID())
+        Customer customer = webClient.baseUrl(CUSTOMER_BASE_URL).build().get().uri("/customer/" + accountRequest.getCustomerID())
                 .retrieve().toEntity(Customer.class).block().getBody();
+
         customer.setCustomerID(accountRequest.getCustomerID());
 
-
         Account account = new Account();
+        account.setAccountID(4);
         account.setInitialCredit(accountRequest.getInitialCredit());
         account.setCustomerID(customer.getCustomerID());
         account.setDateCreation(LocalDateTime.now());
+
         response.setAccount(account);
 
-            if (accountRequest.getInitialCredit() > 0) {
-                Transaction transaction = new Transaction();
-                transaction.setAmount(account.getInitialCredit());
-                transaction.setTime(LocalDateTime.now());
+        if (accountRequest.getInitialCredit() > 0) {
+            Transaction transaction = new Transaction();
+            transaction.setTransactionID(4);
+            transaction.setAmount(account.getInitialCredit());
+            transaction.setTime(LocalDateTime.now());
 
-//                account.getTransactions().add(transaction);
+            account.setTransactionID(transaction.getTransactionID());
+            AccountEvent accountEvent = AccountEvent.builder().accountId(account.getAccountID()).status("CREATED").transaction(transaction).build();
 
-                Transaction trans = webClient.baseUrl(TRANSACTION_BASE_URL).build().post().uri("/transaction")
-                        .body(Mono.just(transaction), Transaction.class)
-                        .retrieve()
-                        .bodyToMono(Transaction.class).block();
+            rabbitTemplate.convertAndSend(MessageConfig.EXCHANGE, MessageConfig.ROUTING_KEY, accountEvent);
+            response.getTransactions().add(transaction);
 
-                response.getTransactions().add(trans);
+            accountRepository.save(account);
+            return response;
+        }
 
-                return response;
-//                return AccountMapper.toAccountTransactionDTO(accountRepository.save(account));
-            }
-
-            Account account1 = accountRepository.save(account);
+        accountRepository.save(account);
         return response;
-//        return AccountMapper.toAccountDTO(accountRepository.save(account));
     }
 
     @Override
@@ -83,4 +89,23 @@ public class AccountServiceImpl implements AccountServiceInterface {
         return accountRepository.findAll().stream().map(AccountMapper::toAccountDTO).collect(Collectors.toList());
     }
 
+    public RestApiResponse getAccountWithTransaction(Integer id) {
+        RestApiResponse restApiResp = new RestApiResponse();
+
+        List<AccountTransactionDTO> res = accountRepository.findByCustomerID(id).stream().map(AccountMapper::toAccountTransactionDTO).collect(Collectors.toList());
+
+        final String CUSTOMER_BASE_URL = "http://CUSTOMER-SERVICE/api/v1";
+        Customer customer = webClient.baseUrl(CUSTOMER_BASE_URL).build().get().uri("/customer/"+res.get(0).getCustomerId()).retrieve().toEntity(Customer.class).block().getBody();
+        customer.setCustomerID(res.get(0).getCustomerId());
+
+        final String TRANSACTION_BASE_URL = "http://TRANSACTION-SERVICE/api/v1";
+
+        Transaction transaction = webClient.baseUrl(TRANSACTION_BASE_URL).build().get().uri("/transaction/" + res.get(0).getTransactionId())
+                .retrieve().toEntity(Transaction.class).block().getBody();
+
+        restApiResp.setAccount(customer);
+        restApiResp.getTransactions().add(transaction);
+
+        return restApiResp;
+    }
 }

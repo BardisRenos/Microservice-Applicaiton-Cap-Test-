@@ -29,4 +29,10 @@ public class AccountController {
     public List<AccountDTO> getAllAccount() {
         return accountService.getAllAccount();
     }
+
+    @GetMapping("withCustomerId")
+    @ResponseStatus(HttpStatus.OK)
+    public RestApiResponse getAccountWithTransaction(@RequestParam("id") Integer id) {
+        return accountService.getAccountWithTransaction(id);
+    }
 }

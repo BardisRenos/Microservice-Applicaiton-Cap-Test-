@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-@Builder
+//@Builder
 @NoArgsConstructor
 @Entity
 @Table(name = "account")
@@ -37,15 +36,14 @@ public class Account {
     @Column(name = "customer_id")
     private Integer customerID;
 
-//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "customer_fk")
-//    private Customer customer;
+    @Column(name = "transaction_id")
+    private Integer transactionID;
 
-
-    public Account(Integer accountID, Integer initialCredit, LocalDateTime dateCreation, Integer customerID) {
+    public Account(Integer accountID, Integer initialCredit, LocalDateTime dateCreation, Integer customerID, Integer transactionID) {
         this.accountID = accountID;
         this.initialCredit = initialCredit;
         this.dateCreation = dateCreation;
         this.customerID = customerID;
+        this.transactionID = transactionID;
     }
 }

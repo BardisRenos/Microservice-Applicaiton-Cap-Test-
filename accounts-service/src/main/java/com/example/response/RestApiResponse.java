@@ -1,15 +1,15 @@
 package com.example.response;
 
-import com.example.entity.Account;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
-public class RestApiResponse {
+public class RestApiResponse<Τ> {
 
-    private List<Transaction> transactions;
-    private Account account;
+    private Τ account;
+    private List<Τ> transactions = new ArrayList<>();
 }
