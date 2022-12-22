@@ -1,7 +1,7 @@
 package com.example.event;
 
 import com.example.entity.Transaction;
-import com.example.service.Interfaces.TransactionServiceInterface;
+import com.example.service.Interfaces.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -13,9 +13,9 @@ public class EventHandler {
 
     public static final String QUEUE = "account_queue";
 
-    private TransactionServiceInterface transactionService;
+    private TransactionService transactionService;
 
-    public EventHandler(TransactionServiceInterface transactionService) {
+    public EventHandler(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 

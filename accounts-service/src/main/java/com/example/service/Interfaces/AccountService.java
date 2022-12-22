@@ -6,7 +6,7 @@ import com.example.response.RestApiResponse;
 
 import java.util.List;
 
-public interface AccountServiceInterface {
+public interface AccountService {
 
     RestApiResponse createAccount(AccountRequest accountRequest);
 
