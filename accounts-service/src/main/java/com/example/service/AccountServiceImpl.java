@@ -6,12 +6,14 @@ import com.example.dto.AccountDTO;
 import com.example.dto.AccountTransactionDTO;
 import com.example.entity.Account;
 import com.example.event.AccountEvent;
+import com.example.event.NotificationEvent;
 import com.example.mapper.AccountMapper;
 import com.example.request.AccountRequest;
 import com.example.response.Customer;
+import com.example.response.Notification;
 import com.example.response.RestApiResponse;
 import com.example.response.Transaction;
-import com.example.service.Interfaces.AccountServiceInterface;
+import com.example.service.Interfaces.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class AccountServiceImpl implements AccountServiceInterface {
+public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
@@ -49,7 +51,7 @@ public class AccountServiceImpl implements AccountServiceInterface {
 
         final String CUSTOMER_BASE_URL = "http://CUSTOMER-SERVICE/api/v1";
 
-        RestApiResponse response = new RestApiResponse();
+        RestApiResponse<Object> response = new RestApiResponse<>();
 
         Customer customer = webClient.baseUrl(CUSTOMER_BASE_URL).build().get().uri("/customer/" + accountRequest.getCustomerID())
                 .retrieve().toEntity(Customer.class).block().getBody();
@@ -80,6 +82,10 @@ public class AccountServiceImpl implements AccountServiceInterface {
             return response;
         }
 
+        Notification notification =  Notification.builder().notificationID(2).accountId(account.getAccountID()).amount(account.getInitialCredit()).time(account.getDateCreation()).build();
+        NotificationEvent notificationEvent = NotificationEvent.builder().accountId(account.getAccountID()).status("CREATED").notification(notification).build();
+
+        rabbitTemplate.convertAndSend(MessageConfig.EXCHANGE_NOTIFICATION, MessageConfig.ROUTING_KEY_NOTIFICATION, notificationEvent);
         accountRepository.save(account);
         return response;
     }
@@ -95,16 +101,19 @@ public class AccountServiceImpl implements AccountServiceInterface {
         List<AccountTransactionDTO> res = accountRepository.findByCustomerID(id).stream().map(AccountMapper::toAccountTransactionDTO).collect(Collectors.toList());
 
         final String CUSTOMER_BASE_URL = "http://CUSTOMER-SERVICE/api/v1";
-        Customer customer = webClient.baseUrl(CUSTOMER_BASE_URL).build().get().uri("/customer/"+res.get(0).getCustomerId()).retrieve().toEntity(Customer.class).block().getBody();
+
+        Customer customer = webClient.baseUrl(CUSTOMER_BASE_URL).build().get().uri("/customer/"+id).retrieve().toEntity(Customer.class).block().getBody();
+
         customer.setCustomerID(res.get(0).getCustomerId());
 
         final String TRANSACTION_BASE_URL = "http://TRANSACTION-SERVICE/api/v1";
 
-        Transaction transaction = webClient.baseUrl(TRANSACTION_BASE_URL).build().get().uri("/transaction/" + res.get(0).getTransactionId())
-                .retrieve().toEntity(Transaction.class).block().getBody();
+        for (AccountTransactionDTO re : res) {
+            restApiResp.getTransactions().add(webClient.baseUrl(TRANSACTION_BASE_URL).build().get().uri("/transaction/" + re.getTransactionId())
+                    .retrieve().toEntity(Transaction.class).block().getBody());
+        }
 
         restApiResp.setAccount(customer);
-        restApiResp.getTransactions().add(transaction);
 
         return restApiResp;
     }

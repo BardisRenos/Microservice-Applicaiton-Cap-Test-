@@ -26,10 +26,4 @@ public class TransactionController {
     public TransactionDTO getTransaction(@PathVariable("id") Integer id) {
         return transactionService.getTransaction(id);
     }
-
-    @GetMapping("/test")
-    @ResponseStatus(HttpStatus.OK)
-    public String check() {
-        return "Hello World";
-    }
 }

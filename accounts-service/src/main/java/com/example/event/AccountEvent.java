@@ -8,9 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AccountEvent {
+public class AccountEvent<T> {
 
-    private Integer accountId;
-    private String status;
+    private T accountId;
+    private T status;
     private Transaction transaction;
 }

@@ -5,7 +5,7 @@ import com.example.entity.Transaction;
 
 import java.util.List;
 
-public interface TransactionServiceInterface {
+public interface TransactionService {
 
     List<TransactionDTO> getAllTransactions();
 
