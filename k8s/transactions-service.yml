@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction-service-app
+  labels:
+    app: transaction-service-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app : transaction-service-app
+  template:
+    metadata:
+      labels:
+        app: transaction-service-app
+    spec:
+      containers:
+        - name: transaction-service-app
+          image: renosbardis/transaction-service:0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8084
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name:  transaction-service-svc
+spec:
+  selector:
+    app:  transaction-service-app
+  ports:
+    - port:  80
+      targetPort:  8084
