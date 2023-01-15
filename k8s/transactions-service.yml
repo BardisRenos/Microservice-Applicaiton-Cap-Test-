@@ -9,22 +9,28 @@ spec:
   selector:
     matchLabels:
       app : transaction-service-app
+  strategy: {}
   template:
     metadata:
       labels:
         app: transaction-service-app
     spec:
       containers:
-        - name: transaction-service-app
-          image: renosbardis/transaction-service:0.0.1
-          imagePullPolicy: IfNotPresent
+        - env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+          name: transaction-service-app
+          resources: {}
+          image: renosbardis/transaction-service:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8084
+      restartPolicy: Always
+status: {}
 
 ---
-
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name:  transaction-service-svc
 spec:
@@ -33,3 +39,5 @@ spec:
   ports:
     - port:  80
       targetPort:  8084
+status:
+  loadBalancer: {}

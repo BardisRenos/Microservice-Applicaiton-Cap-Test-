@@ -16,15 +16,17 @@ spec:
     spec:
       containers:
         - name: account-service-app
-          image: renosbardis/accounts-service:0.0.1
-          imagePullPolicy: IfNotPresent
+          image: renosbardis/accounts-service:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8081
+          resources: { }
+      restartPolicy: Always
+status: {}
 
 ---
-
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name:  account-service-svc
 spec:

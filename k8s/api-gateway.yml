@@ -15,22 +15,34 @@ spec:
         app: api-gateway-app
     spec:
       containers:
-        - name: api-gateway-app
-          image: renosbardis/api-gateway:0.0.1-SNAPSHOT
-          imagePullPolicy: IfNotPresent
+        - env:
+            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY
+              value: ' TRACE'
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+          name: api-gateway-app
+          image: renosbardis/api-gateway:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8888
+          resources: {}
+      restartPolicy: Always
+status: {}
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  labels:
+    app: api-gateway-svc
   name: api-gateway-svc
 spec:
   type: LoadBalancer
   ports:
     - port: 80
       targetPort: 8888
-      protocol: TCP
+      protocol: "TCP"
   selector:
     app: api-gateway-app
+status:
+  loadBalancer: {}

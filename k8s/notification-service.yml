@@ -9,22 +9,28 @@ spec:
   selector:
     matchLabels:
       app : notification-service-app
+  strategy: {}
   template:
     metadata:
       labels:
         app: notification-service-app
     spec:
       containers:
-        - name: notification-service-app
-          image: renosbardis/notification-service:0.0.1
-          imagePullPolicy: IfNotPresent
+        - env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+          name: notification-service-app
+          resources: {}
+          image: renosbardis/notification-service:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8085
+      restartPolicy: Always
+status: {}
 
 ---
-
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name:  notification-service-svc
 spec:
@@ -33,3 +39,5 @@ spec:
   ports:
     - port:  80
       targetPort:  8085
+status:
+  loadBalancer: {}

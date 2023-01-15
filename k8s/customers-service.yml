@@ -9,6 +9,7 @@ spec:
   selector:
     matchLabels:
       app : customer-service-app
+  strategy: {}
   template:
     metadata:
       labels:
@@ -16,15 +17,15 @@ spec:
     spec:
       containers:
         - name: customer-service-app
-          image: renosbardis/customer-service:0.0.1
-          imagePullPolicy: IfNotPresent
+          image: renosbardis/customer-service:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8083
+status: {}
 
 ---
-
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name:  customer-service-svc
 spec:
@@ -33,3 +34,5 @@ spec:
   ports:
     - port:  80
       targetPort:  8083
+status:
+  loadBalancer: {}
