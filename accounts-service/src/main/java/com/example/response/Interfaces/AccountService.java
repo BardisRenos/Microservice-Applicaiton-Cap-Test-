@@ -1,4 +1,4 @@
-package com.example.service.Interfaces;
+package com.example.response.Interfaces;
 
 import com.example.dto.AccountDTO;
 import com.example.request.AccountRequest;
